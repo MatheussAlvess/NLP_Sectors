@@ -134,10 +134,8 @@ class Pipeline():
                                                             maxlen=max_len)
 
         
-        print('antes',self.dataset['category'])
         self.mlb = MultiLabelBinarizer()
         self.data_labels = self.mlb.fit_transform(self.dataset['category'])
-        print('depois',self.data_labels)
 
         self.train_inputs, self.test_inputs, self.train_labels, self.test_labels = train_test_split(self.data_inputs,
                                                                                             self.data_labels,
