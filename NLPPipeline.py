@@ -1,22 +1,56 @@
 import os 
 import re
 import string
-import numpy as np
 import spacy as sp
 import pandas as pd
 import tensorflow as tf
-import tensorflow_datasets as tfds
 
-from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MultiLabelBinarizer
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+os.environ['PYTHONHASHSEED'] = str(42) 
+os.environ['TF_DETERMINISTIC_OPS'] = '1'
+os.environ['TF_CUDNN_DETERMINISM'] = '1'
+
 
 class Pipeline():
+    """
+    Classe que encapsula o pipeline de processamento e previsão de um modelo CNN multilabel para classificação de texto.
+
+    Attributes:
+        dataset_path (str): Caminho para o diretório contendo o conjunto de dados.
+        dataset_name (str): Nome do arquivo CSV contendo o conjunto de dados.
+        sentences_variable (str): Nome da variável que contém os textos no conjunto de dados.
+        categories_variable (str): Nome da variável que contém as categorias no conjunto de dados.
+        model_name (str): Nome do arquivo para salvar o modelo treinado.
+        save (bool): Indica se o modelo treinado deve ser salvo após o treinamento.
+        emb_dim (int): Dimensão do espaço de incorporação (embedding) dos tokens.
+        nb_filters (int): Número de filtros para as camadas convolucionais do modelo CNN.
+        batch_size (int): Tamanho do lote utilizado durante o treinamento do modelo.
+        ffn_units (int): Número de unidades para as camadas densas (fully connected) do modelo CNN.
+        nb_classes (int): Número de classes de saída do modelo.
+        dropout_rate (float): Taxa de dropout para a regularização do modelo.
+        nb_epochs (int): Número de épocas de treinamento do modelo.
+        verbose (int): Nível de detalhes das mensagens durante o treinamento do modelo.
+
+    Methods:
+        cleaning(text, nlp, stop_words): Realiza a limpeza de um texto, incluindo conversão para minúsculas, remoção de caracteres especiais, stopwords e pontuações.
+        processing_dataset(): Processa o conjunto de dados, incluindo carregamento, limpeza dos textos, tokenização, binarização das categorias e divisão em conjuntos de treino e teste.
+        DCNN(vocab_size, training=False, name='dcnn'): Define o modelo CNN com arquitetura especificada.
+        run_model(): Treina o modelo CNN utilizando os dados de treino e avalia o desempenho com os dados de teste.
+        predict_sector(text='Texto com o tema de interesse', threshold=0.3): Realiza previsões de categorias para um texto de entrada utilizando o modelo treinado.
+
+    Para o passo a passo, acesse o notebook "analisys.ipynb" neste mesmo repositório.
+    """
+
     def __init__(self,
                 dataset_path: object = 'dataset/',
                 dataset_name: object = 'dataset.csv',
                 sentences_variable: object = 'sentence',
                 categories_variable: object = 'category',
-                model_name: object = 'cnn_model.keras',
+                model_name: object = 'CNN_Multilabel_NLP.keras',
                 save: bool = True,
                 emb_dim: int = 128,
                 nb_filters: int = 100,
@@ -44,6 +78,7 @@ class Pipeline():
         self.verbose = verbose
 
 
+    # Limpeza dos textos (tudo em minúsculo, removendo acentos, caracteres especiais e stopwords)
     def cleaning(self,text,nlp,stop_words):
         text = text.lower()
 
@@ -55,7 +90,6 @@ class Pipeline():
         text = re.sub(r"[ùúûü]", "u", text)
         text = re.sub(r"[ýÿ]", "y", text)
         text = re.sub(r"[ç]", "c", text)
-        text = re.sub(r"[0-9]", "", text)
 
         text = text.lower()
         document = nlp(text)
@@ -69,6 +103,7 @@ class Pipeline():
 
         return words
 
+    # Função para processamento do conjunto de dados (Desde a limpeza até a tokenização e padding)
     def processing_dataset(self):
         print('processing dataset')
         dataset_path = self.dataset_path 
@@ -77,24 +112,20 @@ class Pipeline():
         self.dataset = pd.read_csv(os.path.join(dataset_path, dataset_name))
         
         self.dataset[self.categories_variable] = [set.split(',') for set in self.dataset[self.categories_variable]]
-        self.dataset = self.dataset.explode(self.categories_variable).reset_index(drop=True)
 
         nlp = sp.blank("pt")
         stop_words = sp.lang.pt.STOP_WORDS
 
         self.dataset[self.sentences_variable] = [self.cleaning(text,nlp,stop_words) for text in self.dataset[self.sentences_variable]]
-        self.dataset[self.categories_variable] = [self.cleaning(text,nlp,stop_words) for text in self.dataset[self.categories_variable]]
 
-        self.enc = LabelEncoder()
-        
         X = self.dataset[self.sentences_variable]
-        y = self.enc.fit_transform(self.dataset[self.categories_variable])
-        self.data_labels = np.array(y)
 
         print('Tokenizing')
-        self.tokenizer = tfds.deprecated.text.SubwordTextEncoder.build_from_corpus(X, target_vocab_size=10000)
-        self.data_inputs = [self.tokenizer.encode(sentence) for sentence in X]
+        self.tokenizer = Tokenizer()
+        self.tokenizer.fit_on_texts(X.tolist())
+        self.data_inputs = self.tokenizer.texts_to_sequences(X.tolist())
 
+        self.vocab_size = len(self.tokenizer.word_index) + 1
         max_len = max([len(sentence) for sentence in self.data_inputs])+20
 
         self.data_inputs = tf.keras.preprocessing.sequence.pad_sequences(self.data_inputs,
@@ -103,14 +134,20 @@ class Pipeline():
                                                             maxlen=max_len)
 
         
+        print('antes',self.dataset['category'])
+        self.mlb = MultiLabelBinarizer()
+        self.data_labels = self.mlb.fit_transform(self.dataset['category'])
+        print('depois',self.data_labels)
+
         self.train_inputs, self.test_inputs, self.train_labels, self.test_labels = train_test_split(self.data_inputs,
-                                                                                self.data_labels,
-                                                                                test_size=0.1,
-                                                                                stratify = self.data_labels)
-        
+                                                                                            self.data_labels,
+                                                                                            test_size=0.1,
+                                                                                            stratify = self.data_labels)
+                    
         print('Shape dos dados de treinamento:',f'Inputs: {self.train_inputs.shape} Labels: {self.train_labels.shape}')
         print('Shape dos dados de teste:',f'Inputs: {self.test_inputs.shape} Labels: {self.test_labels.shape}')
 
+    # Modelo CNN 
     def DCNN(self,
             vocab_size,
             training=False,
@@ -150,35 +187,31 @@ class Pipeline():
         dropout = tf.keras.layers.Dropout(rate=self.dropout_rate)(dense, training=training) # Camada de dropout
         
         # Camada de saída
-        if self.nb_classes == 2:
-            outputs = tf.keras.layers.Dense(units=1, activation='sigmoid', name='output')(dropout)
-        else:
-            outputs = tf.keras.layers.Dense(units=self.nb_classes, activation='softmax', name='output')(dropout)
+        outputs = tf.keras.layers.Dense(units=self.nb_classes, activation='softmax', name='output')(dropout)
 
         # Criando o modelo
         model = tf.keras.Model(inputs=inputs, outputs=outputs, name=name)
 
         return model
     
+
+    # Executa o treinamento da CNN com os textos processados como input
     def run_model(self):
         print('Training started')
+        tf.random.set_seed(1)
         ## Parametros
-        vocab_size = self.tokenizer.vocab_size
-
+        
         ## Inicializando modelo
-        model = self.DCNN(vocab_size=vocab_size)
+        model = self.DCNN(vocab_size=self.vocab_size)
         
         ## Compilando
-        if self.nb_classes == 2:
-            model.compile(loss='binary_crossentropy', optimizer='Adam', metrics=['accuracy'])
-        else:
-            model.compile(loss='sparse_categorical_crossentropy', optimizer='Adam', metrics=['accuracy'])
+        model.compile(loss='binary_crossentropy', optimizer='Adam', metrics=['accuracy'])
 
         self.history = model.fit(self.train_inputs, self.train_labels,
-                            batch_size = self.batch_size,
-                            epochs = self.nb_epochs,
-                            verbose = 1,
-                            validation_split = .1)
+                                batch_size = self.batch_size,
+                                epochs = self.nb_epochs,
+                                verbose = 1,
+                                validation_split = .1)
 
         self.results = model.evaluate(self.test_inputs, self.test_labels, batch_size=self.batch_size)
         print('loss: ',self.results[0],'\nacurácia: ',self.results[1])
@@ -189,36 +222,29 @@ class Pipeline():
         
         self.model = model
 
-        
-    def predict_sector(self,text: object = 'Texto com o tema de interesse', threashold: float = 0.2) -> list:
-        # Tokeniza o texto usando o tokenizador
-        text = self.tokenizer.encode(text)
-        
-        # Faz a previsão usando o modelo
-        list_of_predictions = self.model.predict(np.array([text]))
-        
-        # Encontra os índices das previsões que têm uma probabilidade acima do threashold especificado
-        ind = []
-        for i in range(len(list_of_predictions)):
-            ind.append(np.where(list_of_predictions[i] > threashold)[0].tolist())
-            
-        lab = []
-        # Converte os índices das previsões em rótulos
-        for i in ind:
-            # Se houver mais de um índice com probabilidade acima do limiar
-            if len(i)>1:
-                aux = []
-                # Converte cada índice em seu rótulo correspondente
-                for j in i:
-                    aux.append(self.enc.inverse_transform([j]).tolist()[0])
-                lab.append(aux)
-            # Se houver apenas um índice com probabilidade acima do limiar
-            else:
-                lab.append(self.enc.inverse_transform(i).tolist()[0])
 
-        print(lab) 
-        return lab
+    # Realiza as predições de novos textos
+    def predict_sector(self,text: object = 'Texto com o tema de interesse', threshold: float = 0.3) -> list:
+        
+        new_sentence = text
 
+        # Pré-processamento da nova frase
+        new_sentence_tokens = self.tokenizer.texts_to_sequences([new_sentence])
+        new_sentence_tokens_padded = pad_sequences(new_sentence_tokens, padding='post', maxlen=100)
+
+        # Previsão da nova frase
+        predictions = self.model.predict(new_sentence_tokens_padded)
+
+        # Decodificação da previsão
+        threshold = 0.1  # Limiar de probabilidade para considerar a classe presente ou não
+        predicted_labels = (predictions > threshold).astype(int)
+
+        # Decodificando os rótulos previstos usando o MultiLabelBinarizer inverso
+        predicted_categories = self.mlb.inverse_transform(predicted_labels)
+
+        print([i for i in predicted_categories[0]])
+        return [i for i in predicted_categories[0]]
+        
     
 if __name__=='__main__':
 
