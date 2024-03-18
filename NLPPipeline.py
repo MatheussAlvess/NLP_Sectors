@@ -234,7 +234,6 @@ class Pipeline():
         predictions = self.model.predict(new_sentence_tokens_padded)
 
         # Decodificação da previsão
-        threshold = 0.1  # Limiar de probabilidade para considerar a classe presente ou não
         predicted_labels = (predictions > threshold).astype(int)
 
         # Decodificando os rótulos previstos usando o MultiLabelBinarizer inverso
