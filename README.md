@@ -78,7 +78,7 @@ ___________________________________________
     'sentences_variable': 'tweets',
     'categories_variable': 'sentimentos',
     'model_name': 'CNN_model_sentimentos.keras',
-    'save': True, # necessário para ter o modelo salvo
+    'save': True, # necessário para o modelo ser salvo
     'emb_dim': 128,
     'nb_filters': 100,
     'ffn_units': 512,

@@ -23,7 +23,7 @@ def predict_sector(model, text, threshold: float = 0.3) -> list:
     # Previsão da nova frase
     predictions = model.predict(new_sentence_tokens_padded)
 
-    # Decodificação da previsão
+    # Verificando quais classes possuem pesos acima do threshold estabelecido
     predicted_labels = (predictions > threshold).astype(int)
 
     # Decodificando os rótulos previstos usando o MultiLabelBinarizer inverso
