@@ -47,7 +47,7 @@ Para mais informações sobre a abordagem [Large-scale multi-label text classifi
 **Passos iniciais**
 1. Clone este repositório para o seu computador.
    ```
-   git clone https://github.com/MatheussAlvess/<nome_do_repositório>.git
+   git clone https://github.com/MatheussAlvess/NLP_Setores.git
    ```
 3. Navegue até o diretório do projeto.
 4. Garanta ter as dependências necessárias (vide `requirements.txt`)
