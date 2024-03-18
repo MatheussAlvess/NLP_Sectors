@@ -68,6 +68,7 @@ ___________________________________________
 
 1. Armazene seu dataset no formato `.csv` dentro de uma pasta.
    Ex.: `path_data_setimentos/dataset_sentimentos.csv`
+
 2. Dentro do arquivo `run_pipeline.py`, altere o dicionário de parâmetros passando os diretórios, nomes e parâmetros do modelo da forma como achar mais adequada.
  Ex.:
   ```
@@ -77,7 +78,7 @@ ___________________________________________
     'sentences_variable': 'tweets',
     'categories_variable': 'sentimentos',
     'model_name': 'CNN_model_sentimentos.keras',
-    'save': True,
+    'save': True, # necessário para ter o modelo salvo
     'emb_dim': 128,
     'nb_filters': 100,
     'ffn_units': 512,
@@ -88,20 +89,14 @@ ___________________________________________
     'verbose': 1}
   ```
 
-3. Execute o comando no terminal:
+3. Uma vez com todos parâmetros de acordo, execute o comando no terminal:
    ```
    python run_pipeline.py
    ```
-   Dessa forma será criado o dataset de coordenadas a partir dos vídeos encontrados na pasta de referência. (Por _default_ é "data")
-4. Execute o comando:
-   ```
-   python MLPModel.py
-   ```
-   Assim o modelo MLP será treinado com base no dataset de coordenadas. (A arquitetura e parâmetros podem ser modificados dentro do arquivo)
-5. Por fim execute o comando para reconhecimento das ações:
-   ```
-   python ActionDetection.py
-   ``` 
+   Ao final da execução, será salvo o modelo nomeado conforme o especificado no dicionário `params`.
+   Com o modelo salvo, é possível realizar as classificações dado um texto de input de interesse. 
+
+4. Com isso, já pode ser utilizado o arquivo `PredictText.py` (se atentando em mudar o nome do modelo dentro do arquivo).
 
 ___________________________________________
 
