@@ -15,7 +15,7 @@
 5. Varejo
 ```
 
-O Texto pode se enquadrar em um ou mais setores, como no exemplo "Prefeitura abre vagas para curso de LIBRAS" onde o texto pode ser classificado em Órgão Público e Educação.
+O Texto pode se enquadrar em um ou mais setores, como no exemplo "Prefeitura abre vagas para aulas de LIBRAS" onde o texto pode ser classificado em Órgão Público e Educação.
 
 ## Resumo:
 
