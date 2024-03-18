@@ -3,7 +3,7 @@
 ![Descrição da Imagem](images/streamlit.png)
 
 
-## Este é um projeto de Processamento de Linguagem Natural onde o interesse é, dado um texto de input, predizer se ele é refente à um ou mais setores de um total de 5. 
+## Este é um projeto de Processamento de Linguagem Natural onde o interesse é, dado um texto de input, predizer se ele é referente à um ou mais setores dentre 5. 
 
 **Os 5 setores são:**
 
@@ -15,7 +15,7 @@
 5. Varejo
 ```
 
-O Texto pode se enquadrar em um ou mais setores, como no exemplo "A prefeitura está oferecendo cursos de línguas" onde o texto pode ser classificado em Órgão Público e Educação.
+O Texto pode se enquadrar em um ou mais setores, como no exemplo "Prefeitura abre vagas para curso de LIBRAS" onde o texto pode ser classificado em Órgão Público e Educação.
 
 ## Resumo:
 
