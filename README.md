@@ -61,8 +61,33 @@ Para mais informações sobre a abordagem [Large-scale multi-label text classifi
   
   > Ex.: Executando `python PredictText.py Estude LIBRAS` será retornado `educação`, concluindo que o texto de input se enquadra nesse setor.
 
-___________________________________________
+## Para converter seu modelo desenvolvido em python (Tensorflow/keras) para JavaScript, siga as etapas:
+1. Instale o TensorFlow.js, com o comando no terminal:
+   ```
+   pip install tensorflowjs
+   ``` 
+2. Com TensorFlow.js instalado, execute no terminal 
+   ```
+   tensorflowjs_converter --input_format keras model_saved/CNN_MultiLabel_NLP.h5 model_converted/ 
+   ```
+Assim seu modelo será convertido.
+
+> [!TIP]
+> Você pode salvar diretamente dentro do código, após ter o modelo treinado.
+> 
+>  ```
+>  Exemplo:
+>  
+>  model = DCNN(vocab_size=2000)  
+>  ...
+>  model.compile(...)
+>  model.fit(...)
+>  tfjs.converters.save_keras_model(model, 'model_converted/')
+>  ```
+
   
+
+___________________________________________
 ## Para utilizar o pipeline como base para um projeto próprio, realize as seguinte etapas:
 
 **Uma vez que tudo esteja pronto para ser executado (repositório clonado):**
@@ -107,30 +132,39 @@ ___________________________________________
 - Optando pelo caminho da classificação Multilabel, foi decido criar uma arquitetura de Rede Convolucional.
 - Para o modelo, foi idealizado o uso da função de ativação sigmóide na camada de saída, dado que as labels seriam representadas por um encoding binário.
 
-**2. Uma vez decidido a modelagem, foi necessário fazer uma exploratória dos dados (esta etapa foi tratada da forma mais simples e 'eficiente' possível em busca de brevidade).**
+**2. Análise Exploratória**.
+- Uma vez decidido a modelagem, foi necessário fazer uma exploratória dos dados (esta etapa foi tratada da forma mais simples e 'eficiente' possível em busca de brevidade).
 - A partir da análise, foi entendido que os textos de input para o modelo se tratavam de frases na língua portuguesa com acentos, números e caracteres especiais.
 
-**3. Com isso em mente, iniciou-se a preparação dos dados para input no modelo.
+**3. Tratamento dos dados**.
+- Com isso em mente, iniciou-se a preparação dos dados para input no modelo.
 - O primeiro passo para o tratamento desses textos, foi a remoção de acentos e caracteres especiais, feito com auxilio de funções em python como (Regular Expression e String).
 - Posteriormente, foram removidas as _StopWords_ em busca de diminuir a dimensionalidade do input do modelo.
  (Adendo: Etapas de lemantização, normalização, tokens especiais, etc., não foram consideradas nessa versão do projeto.)
 
-**3. Considerando o tratamento realizado, a próxima etapa foi a conversão dos caracteres para números.**
+**4. Preparação dos dados**.
+- Considerando o tratamento realizado, a próxima etapa foi a conversão dos caracteres para números.
 - Nessa etapa, foi realizada a tokenização dos textos utilizando a biblioteca Tensorflow/Keras (que por si só já considera uma tratativa dos textos de forma mais simplista).
 - Seguido da tokenização, foi feito o padding dos vetores de tokens para garantir que todos inputs tenham o mesmo tamanho (novamente utilizando Tensorflow/Keras).
 
 Nesse momento, já era possível passar os dados de input para o modelo, no entando, é preciso criar o modelo e fazer a divisão dos conjuntos de treino e teste.
 
-**4. Divisão dos conjuntos de treino e teste.**
+**5. Divisão dos conjuntos de treino e teste.**
 - Antes de realizar a divisão, foi feito o encoding das labels para uma representação binária.
 - Uma vez com os textos na estrutura de input do modelo e as labels codificadas, foi aplicada a divisão utilizando scikit-learn reservando 10% dos dados para utilizar como teste e garantindo que a distribuição das classes nos dados de treino e teste seja semelhante à distribuição original dos dados (argumento stratify).
 
-**5. Criando o modelo CNN.**
+**6. Criando o modelo CNN.**
 - Para a construção da arquitetura CNN, foram testadas algumas configurações de quantidade de camadas de convolução e tamanho de filtros. No fim, ficamos com um total de 5 convoluções (1 bigram, 2 trigrams e 2 fourgrams)
 - Ressaltando que após as convoluções, a camada flatten é processada pela camada densa que tem como função de ativação da última camada a sigmóide.
 
+**7. Avaliação do modelo.**
+- Com o modelo criado e os dados preparados, foi iniciado o treinamento considerando alguns hiperparâmetros predefinidos (os quais não foram otimizados, mas vale um tunning em busca de melhores resultados).**
+- O modelo foi treinado com 100 épocas e durante o treinamento pôde ser observado um comportamento levemente ascendente da loss, indicando um possível overfitting (válido considerar regularizações e até mesmo um early stop).
+- O desempenho da acuária durante o treinamento foi aceitável, no entanto, após atingir um certo ponto fica constante, sendo mais um indicativo de overfitting, onde o modelo em algum momento não consegue generalizar.
+- No período de teste, o modelo apresentou uma acurácia interessante de aproximadamente 71%.
 
-> [!TIP]
-> - Trabalhando em um outro projeto com MediaPipe, já tive experiência com o problema da falha de detecção de landmarks. Como alternativa, utilizei o Pose Estimation da YOLO, a qual é bem mais eficiente realizando as detecções (em troca de um maior custo computacional). [Utilizando YOLO para Pose Estimation](https://github.com/MatheussAlvess/Cervical_Posture_YOLO_Pose_Estimation).
-> - O corpo do código de detecção de pose tem como principal referência esse repositório: [Body-Language-Decoder](https://github.com/nicknochnack/Body-Language-Decoder/tree/main).
+**8. Predição de novos textos.**
+- Como última etapa, foram realizadas algumas predições com textos personalizados com a finalidade de entender a eficiência do modelo.
+- No geral, é um bom classificador com margem para melhorias.
+
 
