@@ -4,7 +4,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
-def predict_sector(text: object = 'Texto com o tema de interesse', threashold: float = 0.3) -> list:
+def predict_sector(model, text: object = 'Texto com o tema de interesse', threshold: float = 0.3) -> list:
 
     pipeline = Pipeline()
     pipeline.processing_dataset()
@@ -22,7 +22,6 @@ def predict_sector(text: object = 'Texto com o tema de interesse', threashold: f
     predictions = model.predict(new_sentence_tokens_padded)
 
     # Decodificação da previsão
-    threshold = 0.1  # Limiar de probabilidade para considerar a classe presente ou não
     predicted_labels = (predictions > threshold).astype(int)
 
     # Decodificando os rótulos previstos usando o MultiLabelBinarizer inverso
@@ -37,4 +36,4 @@ if __name__=='__main__':
     model = load_model("CNN_MultiLabel_NLP.h5")
 
     texto = ' '.join(args)
-    predict_sector(texto)
+    predict_sector(model,texto)
