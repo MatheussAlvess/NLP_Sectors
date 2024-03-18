@@ -248,4 +248,4 @@ if __name__=='__main__':
     pipeline = Pipeline(nb_epochs=100)
     pipeline.processing_dataset()
     pipeline.run_model()
-    pipeline.predict_sector('Estude LIBRAS')
+    #pipeline.predict_sector('Estude LIBRAS')
