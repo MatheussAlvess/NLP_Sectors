@@ -40,7 +40,6 @@ def main():
 
     # Adiciona um campo de texto para receber o input do usuário
     texto_input = st.text_input("")
-    st.markdown(texto_input)
 
     # Se for inserido um texto é predito o setor
     if texto_input:
