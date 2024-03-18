@@ -2,6 +2,7 @@
 
 ![Descrição da Imagem](images/image_streamlit.png)
 
+### [Clique aqui](https://sectors-nlp.streamlit.app/) para classificar em qual setor seu texto se enquadra.
 
 ## Este é um projeto de Processamento de Linguagem Natural onde o interesse é, dado um texto de input, predizer se ele é referente à um ou mais setores dentre 5. 
 
@@ -59,7 +60,7 @@ Para mais informações sobre a abordagem [Large-scale multi-label text classifi
  Com isso, será retornado o setor (ou setores) a qual o texto fornecido se enquadra.
   
   > Ex.: Executando `python PredictText.py Estude LIBRAS` será retornado `educação`, concluindo que o texto de input se enquadra nesse setor.
-  
+
 ___________________________________________
   
 ## Para utilizar o pipeline como base para um projeto próprio, realize as seguinte etapas:
@@ -100,24 +101,33 @@ ___________________________________________
 
 ___________________________________________
 
-#### Observações:
+# Explicando resolução do projeto:
 
-- Esta é a primeira versão do projeto, dessa forma, as classificações com base nas detecções podem não ser tão precisas para algumas ações.
-  Isso se deve por alguns motivos, sendo alguns deles:
-  1. Conjunto de dados relativamente pequeno: Considerei apenas um video curto para cada ação e as ações não variavam muito. Por exemplo, para aprender a ação 'paz'
-     o modelo recebe um cenário onde uma mão está com 2 dedos levantados enquanto que a outra não está visível na imagem, logo, existe a associação de que quando um mão das mãos não está visível isso pode se configurar a ação 'paz',
-     algo que não é necessariamente correto.
-  
-  2. Não houve um tratamento do dataset de coordenadas. Em alguns cenários a ação do sinal 'amigo' não tinha a detecção de nenhuma das mãos, o que faz com que o modelo entenda que a ausência das mão pode ser considerado a ação do sinal 'amigo'.
-     
-  3. Refinamento do modelo. O modelo MLP considerado não foi otimizado, em alguns cenários ele pode estar fazendo a associação dos valores das coordenadas com a ação que não necessariamente é a correta, como acontece para 'tchau', 'paz', 'telefone'.
-     Por serem ações que tem as coordenadas muito parecidas, o modelo pode não ser robusto para identificar a classe.
-     
-  4. O ponto que, ao entendimento adiquirido durante a execução do projeto, mais impacta na confusão da classificação das ações é a falha de detecção dos landmarks.
-     Como o modelo classificador depende das coordenadas, quando a detecção dos landmarks falham, o classificador fica perdido. E isso é mais grave no contexto de treinamento, pois o modelo pode estar aprendendo
-     que a ausência de coordenadas pora as mãos é o sinal "telefone". Isso pode ser resolvido tatno com o tratamento dos dados, melhora na resolução do vídeo (facilitando a detectção) ou até mesmo considerar
-     outro modelo para a detecção que seja mais eficiente.
+**1. O primeiro passo foi decidir qual abordagem seria utilizada.**
+- Optando pelo caminho da classificação Multilabel, foi decido criar uma arquitetura de Rede Convolucional.
+- Para o modelo, foi idealizado o uso da função de ativação sigmóide na camada de saída, dado que as labels seriam representadas por um encoding binário.
 
+**2. Uma vez decidido a modelagem, foi necessário fazer uma exploratória dos dados (esta etapa foi tratada da forma mais simples e 'eficiente' possível em busca de brevidade).**
+- A partir da análise, foi entendido que os textos de input para o modelo se tratavam de frases na língua portuguesa com acentos, números e caracteres especiais.
+
+**3. Com isso em mente, iniciou-se a preparação dos dados para input no modelo.
+- O primeiro passo para o tratamento desses textos, foi a remoção de acentos e caracteres especiais, feito com auxilio de funções em python como (Regular Expression e String).
+- Posteriormente, foram removidas as _StopWords_ em busca de diminuir a dimensionalidade do input do modelo.
+ (Adendo: Etapas de lemantização, normalização, tokens especiais, etc., não foram consideradas nessa versão do projeto.)
+
+**3. Considerando o tratamento realizado, a próxima etapa foi a conversão dos caracteres para números.**
+- Nessa etapa, foi realizada a tokenização dos textos utilizando a biblioteca Tensorflow/Keras (que por si só já considera uma tratativa dos textos de forma mais simplista).
+- Seguido da tokenização, foi feito o padding dos vetores de tokens para garantir que todos inputs tenham o mesmo tamanho (novamente utilizando Tensorflow/Keras).
+
+Nesse momento, já era possível passar os dados de input para o modelo, no entando, é preciso criar o modelo e fazer a divisão dos conjuntos de treino e teste.
+
+**4. Divisão dos conjuntos de treino e teste.**
+- Antes de realizar a divisão, foi feito o encoding das labels para uma representação binária.
+- Uma vez com os textos na estrutura de input do modelo e as labels codificadas, foi aplicada a divisão utilizando scikit-learn reservando 10% dos dados para utilizar como teste e garantindo que a distribuição das classes nos dados de treino e teste seja semelhante à distribuição original dos dados (argumento stratify).
+
+**5. Criando o modelo CNN.**
+- Para a construção da arquitetura CNN, foram testadas algumas configurações de quantidade de camadas de convolução e tamanho de filtros. No fim, ficamos com um total de 5 convoluções (1 bigram, 2 trigrams e 2 fourgrams)
+- Ressaltando que após as convoluções, a camada flatten é processada pela camada densa que tem como função de ativação da última camada a sigmóide.
 
 
 > [!TIP]
