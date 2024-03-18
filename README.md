@@ -68,7 +68,7 @@ Para mais informações sobre a abordagem [Large-scale multi-label text classifi
    ``` 
 2. Com TensorFlow.js instalado, execute no terminal 
    ```
-   tensorflowjs_converter --input_format keras model_saved/CNN_MultiLabel_NLP.h5 model_converted/ 
+   tensorflowjs_converter --input_format==keras model_saved/CNN_MultiLabel_NLP.h5 model_converted/ 
    ```
 Assim seu modelo será convertido.
 
