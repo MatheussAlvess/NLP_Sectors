@@ -1,4 +1,4 @@
-# Processamento de Linguagem Natural para Textos de Setores
+# Processamento de Linguagem Natural para Textos por Setores
 
 ![Descrição da Imagem](images/image_streamlit.png)
 
