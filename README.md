@@ -1,6 +1,6 @@
 # sectors
 
-![Descrição da Imagem](images/streamlit.png)
+![Descrição da Imagem](images/image_streamlit.png)
 
 
 ## Este é um projeto de Processamento de Linguagem Natural onde o interesse é, dado um texto de input, predizer se ele é referente à um ou mais setores dentre 5. 
