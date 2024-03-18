@@ -33,6 +33,7 @@ Para mais informações sobre a abordagem [Large-scale multi-label text classifi
 - `analysis.ipynb` - > Este notebook contém todo o pipeline da resolução do projeto, executado etapa por etapa.
 - `NLPPipeline.py` -> Neste arquivo, é construída uma classe para execução do Pipeline de NLP (você pode passar seus próprio dataset).
 - `run_pipeline.py` -> Este é um arquivo que exemplifica o uso da classe NLPPipeline.
+- `PredictText.py` -> Este é um arquivo que executa a classificação a partir de um texto de input.
 - `NLPStreamlit.py` -> Esse arquivo constrói uma aplicação simples em Streamlit, onde o usuário passa uma frase e é retornada a classe do texto (ou classes).
 - `model_tensorflowjs` -> Nesta pasta está o modelo convertido para java script (feito utilizando o tensorflowjs).
 - `CNN_MultiLabel_NLP.h5` -> Este é o modelo serializado, útil para fazer o load caso não queira executar o treinamento.
@@ -50,43 +51,54 @@ Para mais informações sobre a abordagem [Large-scale multi-label text classifi
 3. Navegue até o diretório do projeto.
 4. Garanta ter as dependências necessárias (vide `requirements.txt`)
    
-- **Para realizar o reconhecimento de uma das 20 ações em um vídeo dado de input, execute o comando**
+- **Para realizar a classificação de um texto, execute o comando no terminal:**
 
   ```
-  python ActionDetection.py
+  python PredictText.py <texto_de_interesse>
   ```
-  Garantindo que dentro do arquivo `ActionDetection.py` a classe "ACTIONS" seja instaciada com o nome do vídeo de interesse de input, assim o vídeo será processado e salvo com o nome `output_<nome_do_video>`. 
+ Com isso, será retornado o setor (ou setores) a qual o texto fornecido se enquadra.
   
-  > Ex.: Executando `python ActionDetection.py`, tendo instanciado "ACTIONS(video_name='libras.mp4')" dentro do arquivo, será salvo um vídeo nomeado `output_libras.mp4`.
-  
-
-- **Caso queira fazer o reconhecimento da ação em tempo real, basta executar:**
-
-  ```
-  python ActionDetection.py live
-  ```
-  
-  Assim a webcam será aberta e poderá ser feito o reconhecimento em tempo real.
+  > Ex.: Executando `python PredictText.py Estude LIBRAS` será retornado `educação`, concluindo que o texto de input se enquadra nesse setor.
   
 ___________________________________________
   
-## Para utilizar o projeto como base para um projeto próprio, realize as seguinte etapas:
+## Para utilizar o pipeline como base para um projeto próprio, realize as seguinte etapas:
 
 **Uma vez que tudo esteja pronto para ser executado (repositório clonado):**
 
-1. Armazene seus vídeos dentro de uma pasta, onde cada vídeo é nomeado de acordo com a ação, pois a classe é obtida a partir do nome do arquivo:
-   Ex.: `data/libras.mp4`   
-2. Execute o comando:
+1. Armazene seu dataset no formato `.csv` dentro de uma pasta.
+   Ex.: `path_data_setimentos/dataset_sentimentos.csv`
+2. Dentro do arquivo `run_pipeline.py`, altere o dicionário de parâmetros passando os diretórios, nomes e parâmetros do modelo da forma como achar mais adequada.
+ Ex.:
+  ```
+  params = {
+    'dataset_path': 'path_data_setimentos/',
+    'dataset_name': 'dataset_sentimentos.csv',
+    'sentences_variable': 'tweets',
+    'categories_variable': 'sentimentos',
+    'model_name': 'CNN_model_sentimentos.keras',
+    'save': True,
+    'emb_dim': 128,
+    'nb_filters': 100,
+    'ffn_units': 512,
+    'nb_classes': 5,
+    'batch_size': 32,
+    'dropout_rate': 0.2,
+    'nb_epochs': 100,
+    'verbose': 1}
+  ```
+
+3. Execute o comando no terminal:
    ```
-   python CreateDataset.py
+   python run_pipeline.py
    ```
    Dessa forma será criado o dataset de coordenadas a partir dos vídeos encontrados na pasta de referência. (Por _default_ é "data")
-3. Execute o comando:
+4. Execute o comando:
    ```
    python MLPModel.py
    ```
    Assim o modelo MLP será treinado com base no dataset de coordenadas. (A arquitetura e parâmetros podem ser modificados dentro do arquivo)
-4. Por fim execute o comando para reconhecimento das ações:
+5. Por fim execute o comando para reconhecimento das ações:
    ```
    python ActionDetection.py
    ``` 
