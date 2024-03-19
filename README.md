@@ -45,12 +45,15 @@ Para mais informações sobre a abordagem [Large-scale multi-label text classifi
 ## Uso:
 
 **Passos iniciais**
-1. Clone este repositório para o seu computador.
+1. Clone este repositório para o seu computador com o comando no terminal:
    ```
    git clone https://github.com/MatheussAlvess/NLP_Setores.git
    ```
 3. Navegue até o diretório do projeto.
-4. Garanta ter as dependências necessárias (vide `requirements.txt`)
+4. Garanta ter as dependências necessárias executando no terminal:
+    ```
+    pip install -r requirements.txt
+    ```
    
 - **Para realizar a classificação de um texto, execute o comando no terminal:**
 
@@ -84,7 +87,16 @@ Assim seu modelo será convertido.
 >  model.fit(...)
 >  tfjs.converters.save_keras_model(model, 'model_converted/')
 >  ```
-
+>
+> Em caso de experienciar `Exception: Error dumping weights, duplicate weight name kernel`, adicione o seguinte comando antes da conversão:
+> ```python
+> #comando 
+> for layer in model.layers:
+>     for weight in layer.weights:
+>         weight.name = layer.name + '/' + weight.name
+> #convertendo
+> tfjs.converters.save_keras_model(model, 'model_converted/')
+> ```
   
 
 ___________________________________________
