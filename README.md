@@ -3,7 +3,7 @@
 ![Exemplo de GIF](images/nlp.gif)
 
 
-### [Clique aqui](https://sectors-nlp.streamlit.app/) to classify which sector your text belongs to.
+### [Click here](https://sectors-nlp.streamlit.app/) to classify which sector your text belongs to.
 
 ## This is a Natural Language Processing project where the goal is to predict which sector(s) a given input text belongs to, from a set of 5 sectors.
 
