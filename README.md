@@ -21,7 +21,10 @@ The text can belong to one or more sectors, such as in the example "Prefeitura a
 
 ## Summary:
 
-The dataset used contains the variable 'sentence', which refers to the texts, and the variable 'category', which refers to the sectors of interest. The texts are in Portuguese with the proper word accents, so extensive preprocessing was required. This involved removing special characters and applying padding (see `analysis.ipynb`). For the multi-label problem, a Convolutional Neural Network (CNN) architecture was created for the binarized labels. In other words, the sigmoid activation function was used in the last dense layer, and the weight between 0 and 1 assigned to each class is compared to a threshold. If one or more classes exceed this threshold, the output will indicate that the text belongs to those sectors.
+The dataset used contains the variable 'sentence', which refers to the texts, and the variable 'category', which refers to the sectors of interest. The texts are in Portuguese with the proper word accents, so extensive preprocessing was required. This involved removing special characters and applying padding (see `analysis.ipynb`). 
+
+For the multi-label problem, a Convolutional Neural Network (CNN) architecture was created for the binarized labels. In other words, the sigmoid activation function was used in the last dense layer, and the weight between 0 and 1 assigned to each class is compared to a threshold. If one or more classes exceed this threshold, the output will indicate that the text belongs to those sectors.
+
 For more information on this approach, visit [Large-scale multi-label text classification](https://keras.io/examples/nlp/multi_label_classification/)    
 
 ## Dataset:
