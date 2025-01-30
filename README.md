@@ -1,12 +1,13 @@
-# Processamento de Linguagem Natural para Textos por Setores
+# Natural Language Processing for Texts by Sectors
 
-![Descrição da Imagem](images/image_streamlit.png)
+![Exemplo de GIF](images/nlp.gif)
 
-### [Clique aqui](https://sectors-nlp.streamlit.app/) para classificar em qual setor seu texto se enquadra.
 
-## Este é um projeto de Processamento de Linguagem Natural onde o interesse é, dado um texto de input, predizer se ele é referente à um ou mais setores dentre 5. 
+### [Clique aqui](https://sectors-nlp.streamlit.app/) to classify which sector your text belongs to.
 
-**Os 5 setores são:**
+## This is a Natural Language Processing project where the goal is to predict which sector(s) a given input text belongs to, from a set of 5 sectors.
+
+**The 5 sectors are:**
 
 ```
 1. Educação
@@ -16,70 +17,69 @@
 5. Varejo
 ```
 
-O Texto pode se enquadrar em um ou mais setores, como no exemplo "Prefeitura abre vagas para aulas de LIBRAS" onde o texto pode ser classificado em Órgão Público e Educação.
+The text can belong to one or more sectors, such as in the example "Prefeitura abre vagas para aulas de LIBRAS" where the text can be classified into both "Órgão Público" and "Educação". (Eng: 'City Hall opens vacancies for LIBRAS classes' -> 'Public Sector' and 'Education'.) 
 
-## Resumo:
+## Summary:
 
-O dataset utilizado possui a variável 'sentence' referente aos textos e a variável 'category' referente aos setores de interesse. Os textos estão disponíveis em português com as respectivas acentuações das palavras, com isso foi necessário realizar todo o pre processamento, que envolve desde a remoção de caracteres especiais até o padding (vide `analysis.ipynb`). Para o problema de multi label, foi decidido criar uma arquitetura de Rede Convolucional para as labels binarizadas, ou seja, foi utilizado a função de ativação sigmóide na última camada densa, onde o peso entre 0 e 1 atribuído à cada classe é comparado à um threshold. Se uma ou mais classe ultrapassar esse threshold, o output será de que o texto é referente à esses setores. 
-
-Para mais informações sobre a abordagem [Large-scale multi-label text classification](https://keras.io/examples/nlp/multi_label_classification/)    
+The dataset used contains the variable 'sentence', which refers to the texts, and the variable 'category', which refers to the sectors of interest. The texts are in Portuguese with the proper word accents, so extensive preprocessing was required. This involved removing special characters and applying padding (see `analysis.ipynb`). For the multi-label problem, a Convolutional Neural Network (CNN) architecture was created for the binarized labels. In other words, the sigmoid activation function was used in the last dense layer, and the weight between 0 and 1 assigned to each class is compared to a threshold. If one or more classes exceed this threshold, the output will indicate that the text belongs to those sectors.
+For more information on this approach, visit [Large-scale multi-label text classification](https://keras.io/examples/nlp/multi_label_classification/)    
 
 ## Dataset:
   
-- O dataset consiste em uma coluna `sentence`, referente aos textos a serem analisados, e a coluna `category` que contém os setores para o respectivo texto, podendo ser apenas um ou mais setores.
+- The dataset consists of a `sentence` column, which contains the texts to be analyzed, and a `category` column, which contains the sectors for the respective text, potentially belonging to one or more sectors.
 
-## Conteúdo:
+## Contents:
 
-**No repositório podem ser encontrados os arquivos:**
-- `analysis.ipynb` - > Este notebook contém todo o pipeline da resolução do projeto, executado etapa por etapa.
-- `NLPPipeline.py` -> Neste arquivo, é construída uma classe para execução do Pipeline de NLP (você pode passar seus próprio dataset).
-- `run_pipeline.py` -> Este é um arquivo que exemplifica o uso da classe NLPPipeline.
-- `PredictText.py` -> Este é um arquivo que executa a classificação a partir de um texto de input.
-- `NLPStreamlit.py` -> Esse arquivo constrói uma aplicação simples em Streamlit, onde o usuário passa uma frase e é retornada a classe do texto (ou classes).
-- `model_tensorflowjs` -> Nesta pasta está o modelo convertido para java script (feito utilizando o tensorflowjs).
-- `CNN_MultiLabel_NLP.h5` -> Este é o modelo serializado, útil para fazer o load caso não queira executar o treinamento.
-- `dataset` -> Nesta pasta está o dataset utilizado para o projeto.
-- `images` -> É uma pasta auxiliar para armazenar imagens do projeto.
-- `requirements.txt` -> Dependências.
+**The repository contains the following files:**
+- `analysis.ipynb` - > This notebook contains the entire pipeline for solving the project, executed step by step.
+- `NLPPipeline.py` -> This file builds a class to run the NLP Pipeline (you can pass your own dataset).
+- `run_pipeline.py` -> This file demonstrates the usage of the `NLPPipeline` class.
+- `PredictText.py` -> This file performs classification based on an input text.
+- `NLPStreamlit.py` -> This file creates a simple Streamlit application where the user inputs a sentence, and the text's class(es) are returned.
+- `model_tensorflowjs` -> This folder contains the model converted to JavaScript (done using TensorFlow.js).
+- `CNN_MultiLabel_NLP.h5` -> This is the serialized model, useful for loading it if you don’t want to train it again.
+- `dataset` -> This folder contains the dataset used for the project.
+- `images` -> This folder stores project images.
+- `requirements.txt` -> Dependencies.
 
-## Uso:
+## Usage:
 
-**Passos iniciais**
-1. Clone este repositório para o seu computador com o comando no terminal:
+**Initial steps**
+1. Clone this repository to your computer by running the following command in the terminal:
    ```
-   git clone https://github.com/MatheussAlvess/NLP_Setores.git
+   git clone https://github.com/MatheussAlvess/NLP_Sectors.git
    ```
-3. Navegue até o diretório do projeto.
-4. Garanta ter as dependências necessárias executando no terminal:
+2. Navigate to the project directory.
+3. Ensure the required dependencies are installed by running in the terminal:
     ```
     pip install -r requirements.txt
     ```
    
-- **Para realizar a classificação de um texto, execute o comando no terminal:**
+- **To classify a text, run the following command in the terminal:**
 
   ```
-  python PredictText.py <texto_de_interesse>
+  python PredictText.py <your_text_here>
   ```
- Com isso, será retornado o setor (ou setores) a qual o texto fornecido se enquadra.
+ This will return the sector(s) that the given text belongs to.
   
-  > Ex.: Executando `python PredictText.py Estude LIBRAS` será retornado `educação`, concluindo que o texto de input se enquadra nesse setor.
+  > Example: Running `python PredictText.py Estudar LIBRAS` will return `educação`, concluding that the input text belongs to the Education sector.
 
-## Para converter seu modelo desenvolvido em python (Tensorflow/keras) para JavaScript, siga as etapas:
-1. Instale o TensorFlow.js, com o comando no terminal:
+## To convert your trained model (TensorFlow/Keras) to JavaScript, follow these steps:
+1. Install TensorFlow.js by running the following command in the terminal:
    ```
    pip install tensorflowjs
    ``` 
-2. Com TensorFlow.js instalado, execute no terminal 
+2. With TensorFlow.js installed, run the following command in the terminal:
    ```
    tensorflowjs_converter --input_format==keras model_saved/CNN_MultiLabel_NLP.h5 model_converted/ 
    ```
-Assim seu modelo será convertido.
+This will convert your model.
 
 > [!TIP]
-> Você pode salvar diretamente dentro do código, após ter o modelo treinado.
+> You can save the model directly in your code after training.
 > 
 >  ```
->  Exemplo:
+>  Example:
 >  
 >  model = DCNN(vocab_size=2000)  
 >  ...
@@ -88,27 +88,27 @@ Assim seu modelo será convertido.
 >  tfjs.converters.save_keras_model(model, 'model_converted/')
 >  ```
 >
-> Em caso de experienciar `Exception: Error dumping weights, duplicate weight name kernel`, adicione o seguinte comando antes da conversão:
+> If you encounter `Exception: Error dumping weights, duplicate weight name kernel`, add the following command before conversion:
 > ```python
-> #comando 
+> #command  
 > for layer in model.layers:
 >     for weight in layer.weights:
 >         weight.name = layer.name + '/' + weight.name
-> #convertendo
+> #converting
 > tfjs.converters.save_keras_model(model, 'model_converted/')
 > ```
   
 
 ___________________________________________
-## Para utilizar o pipeline como base para um projeto próprio, realize as seguinte etapas:
+## To use the pipeline as the base for your own project, follow these steps:
 
-**Uma vez que tudo esteja pronto para ser executado (repositório clonado):**
+**Once everything is ready to run (repository cloned):**
 
-1. Armazene seu dataset no formato `.csv` dentro de uma pasta.
-   Ex.: `path_data_setimentos/dataset_sentimentos.csv`
+1. Store your dataset in `.csv` format within a folder.
+Example: `path_data_setimentos/dataset_sentimentos.csv`
 
-2. Dentro do arquivo `run_pipeline.py`, altere o dicionário de parâmetros passando os diretórios, nomes e parâmetros do modelo da forma como achar mais adequada.
- Ex.:
+3. Inside the `run_pipeline.py` file, modify the parameters dictionary, passing the directories, names, and model parameters as needed.
+ Example:
   ```
   params = {
     'dataset_path': 'path_data_setimentos/',
@@ -116,7 +116,7 @@ ___________________________________________
     'sentences_variable': 'tweets',
     'categories_variable': 'sentimentos',
     'model_name': 'CNN_model_sentimentos.keras',
-    'save': True, # necessário para o modelo ser salvo
+    'save': True, # necessary for the model to be saved
     'emb_dim': 128,
     'nb_filters': 100,
     'ffn_units': 512,
@@ -127,56 +127,54 @@ ___________________________________________
     'verbose': 1}
   ```
 
-3. Uma vez com todos parâmetros de acordo, execute o comando no terminal:
+3. Once all parameters are set, run the following command in the terminal:
    ```
    python run_pipeline.py
    ```
-   Ao final da execução, será salvo o modelo nomeado conforme o especificado no dicionário `params`.
-   Com o modelo salvo, é possível realizar as classificações dado um texto de input de interesse. 
+   After execution, the model will be saved with the specified name in the `params` dictionary. With the saved model, you can classify input texts.
 
-4. Com isso, já pode ser utilizado o arquivo `PredictText.py` (se atentando em mudar o nome do modelo dentro do arquivo).
+4. Now you can use the `PredictText.py` file (be sure to update the model name within the file).
 
 ___________________________________________
 
-# Explicando resolução do projeto:
+# Explaining the Project Solution:
 
-**1. O primeiro passo foi decidir qual abordagem seria utilizada.**
-- Optando pelo caminho da classificação Multilabel, foi decido criar uma arquitetura de Rede Convolucional.
-- Para o modelo, foi idealizado o uso da função de ativação sigmóide na camada de saída, dado que as labels seriam representadas por um encoding binário.
+**1. The first step was deciding which approach to use.**
+- Choosing the multi-label classification approach, it was decided to create a Convolutional Neural Network (CNN) architecture.
+- For the model, the use of the sigmoid activation function in the output layer was chosen, as the labels would be represented by a binary encoding.
 
-**2. Análise Exploratória**.
-- Uma vez decidido a modelagem, foi necessário fazer uma exploratória dos dados (esta etapa foi tratada da forma mais simples e 'eficiente' possível em busca de brevidade).
-- A partir da análise, foi entendido que os textos de input para o modelo se tratavam de frases na língua portuguesa com acentos, números e caracteres especiais.
+**2. Exploratory Data Analysis.**
+- After deciding on the modeling, exploratory data analysis was done (this step was kept simple and efficient for brevity).
+- From the analysis, it was understood that the input texts were sentences in Portuguese with accents, numbers, and special characters.
 
-**3. Tratamento dos dados**.
-- Com isso em mente, iniciou-se a preparação dos dados para input no modelo.
-- O primeiro passo para o tratamento desses textos, foi a remoção de acentos e caracteres especiais, feito com auxilio de funções em python como (Regular Expression e String).
-- Posteriormente, foram removidas as _StopWords_ em busca de diminuir a dimensionalidade do input do modelo.
- (Adendo: Etapas de lemantização, normalização, tokens especiais, etc., não foram consideradas nessa versão do projeto.)
+**3. Data Preprocessing.**
+- With this in mind, data preprocessing started. The first step was removing accents and special characters, done using Python functions (Regular Expression and String).
+- Then, stopwords were removed to reduce the input dimensionality for the model. (Note: Lemmatization, normalization, special tokens, etc., were not considered in this project version.)
 
-**4. Preparação dos dados**.
-- Considerando o tratamento realizado, a próxima etapa foi a conversão dos caracteres para números.
-- Nessa etapa, foi realizada a tokenização dos textos utilizando a biblioteca Tensorflow/Keras (que por si só já considera uma tratativa dos textos de forma mais simplista).
-- Seguido da tokenização, foi feito o padding dos vetores de tokens para garantir que todos inputs tenham o mesmo tamanho (novamente utilizando Tensorflow/Keras).
+**4. Data Preparation.**
+- Given the preprocessing done, the next step was converting the characters to numbers.
+- In this step, text tokenization was done using the TensorFlow/Keras library (which already includes a simplistic approach to text handling).
+- After tokenization, padding was applied to ensure all inputs had the same length (again using TensorFlow/Keras).
 
-Nesse momento, já era possível passar os dados de input para o modelo, no entando, é preciso criar o modelo e fazer a divisão dos conjuntos de treino e teste.
+At this point, the data was ready to be fed into the model. However, it was necessary to create the model and split the training and testing datasets.
 
-**5. Divisão dos conjuntos de treino e teste.**
-- Antes de realizar a divisão, foi feito o encoding das labels para uma representação binária.
-- Uma vez com os textos na estrutura de input do modelo e as labels codificadas, foi aplicada a divisão utilizando scikit-learn reservando 10% dos dados para utilizar como teste e garantindo que a distribuição das classes nos dados de treino e teste seja semelhante à distribuição original dos dados (argumento stratify).
+**5. Splitting the Training and Testing Datasets.**
+- Before splitting, the labels were encoded into binary representation.
+- Once the texts were prepared as model inputs and labels were encoded, the splitting was done using scikit-learn, reserving 10% of the data for testing while ensuring the class distribution was similar to the original dataset (using the `stratify` argument).
 
-**6. Criando o modelo CNN.**
-- Para a construção da arquitetura CNN, foram testadas algumas configurações de quantidade de camadas de convolução e tamanho de filtros. No fim, ficamos com um total de 5 convoluções (1 bigram, 2 trigrams e 2 fourgrams)
-- Ressaltando que após as convoluções, a camada flatten é processada pela camada densa que tem como função de ativação da última camada a sigmóide.
+**6.  Building the CNN Model.**
+- For the CNN architecture, different configurations for the number of convolutional layers and filter sizes were tested. In the end, five convolutions were used (1 bigram, 2 trigrams, and 2 fourgrams).
+- After convolutions, the output is processed by a flatten layer and a dense layer, with sigmoid activation in the last layer.
 
-**7. Avaliação do modelo.**
-- Com o modelo criado e os dados preparados, foi iniciado o treinamento considerando alguns hiperparâmetros predefinidos (os quais não foram otimizados, mas vale um tunning em busca de melhores resultados).**
-- O modelo foi treinado com 100 épocas e durante o treinamento pôde ser observado um comportamento levemente ascendente da loss, indicando um possível overfitting (válido considerar regularizações e até mesmo um early stop).
-- O desempenho da acuária durante o treinamento foi aceitável, no entanto, após atingir um certo ponto fica constante, sendo mais um indicativo de overfitting, onde o modelo em algum momento não consegue generalizar.
-- No período de teste, o modelo apresentou uma acurácia interessante de aproximadamente 71%.
+**7. Model Evaluation.**
+- With the model built and the data prepared, training began with some predefined hyperparameters (which were not optimized but could be tuned for better results).
+- The model was trained for 100 epochs, and a slight upward trend in loss was observed during training, indicating potential overfitting (consider regularization or even early stopping).
+- The performance during training showed acceptable accuracy, but at a certain point, it plateaued, indicating overfitting where the model failed to generalize.
+- During testing, the model showed an interesting accuracy of around 71%.
 
-**8. Predição de novos textos.**
-- Como última etapa, foram realizadas algumas predições com textos personalizados com a finalidade de entender a eficiência do modelo.
-- No geral, é um bom classificador com margem para melhorias.
+**8. Predicting with New Texts.**
+- As the final step, some predictions were made with custom texts to assess the model's efficiency.
+- Overall, it is a good classifier with room for improvements.
 
-
+> [!NOTE]
+> - This project is part of a technical case evaluated for a Data Scientist position at HandTalk. Therefore, it is common to find comments in the code written in Portuguese.
